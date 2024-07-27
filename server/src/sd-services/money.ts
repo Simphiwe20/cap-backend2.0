@@ -1730,15 +1730,17 @@ export class money {
     );
     try {
       bh.collection = 'loans';
-      bh.filter = { email: bh.input.body['email'] };
+      bh.filter = { _id: bh.input.body._id };
 
       delete bh.input.body.collection;
+      delete bh.input.body._id;
 
       bh.body = { $set: bh.input.body };
       console.log(bh.filter);
+      console.log(bh.input.body);
 
       this.tracerService.sendData(spanInst, bh);
-      bh = await this.s(bh, parentSpanInst);
+      bh = await this.sd_TL1WpZbn0Tne6gJr(bh, parentSpanInst);
       //appendnew_next_sd_0I0V6wpec5QQqAOF
       return bh;
     } catch (e) {
@@ -1752,8 +1754,11 @@ export class money {
     }
   }
 
-  async s(bh, parentSpanInst) {
-    const spanInst = this.tracerService.createSpan('s', parentSpanInst);
+  async sd_TL1WpZbn0Tne6gJr(bh, parentSpanInst) {
+    const spanInst = this.tracerService.createSpan(
+      'sd_TL1WpZbn0Tne6gJr',
+      parentSpanInst
+    );
     try {
       if (
         this.sdService.operators['eq'](
@@ -1767,7 +1772,7 @@ export class money {
       } else if (
         this.sdService.operators['eq'](
           bh.input.body.status,
-          'declined',
+          'rejected',
           undefined,
           undefined
         )
@@ -1783,7 +1788,7 @@ export class money {
         e,
         'sd_TL1WpZbn0Tne6gJr',
         spanInst,
-        's'
+        'sd_TL1WpZbn0Tne6gJr'
       );
     }
   }
@@ -1798,17 +1803,12 @@ export class money {
         to: bh.input.body.email,
         subject: 'LOAN APPLICATION SUCCESSFUL',
         from: 'Capitec',
-        body: `Your application for a loan been approved.
-<center><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Capitec_Bank_logo.svg/768px-Capitec_Bank_logo.svg.png" width="300px" height="80px"/></center>`,
+        body: `
+    <p>Your application for a loan been approved.</p>
+    <center><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Capitec_Bank_logo.svg/768px-Capitec_Bank_logo.svg.png" width="300px" height="80px"/></center>`,
       };
 
       bh.status = 200;
-
-      let newCurrentAmount =
-        Number(bh.input.body.available_balance) +
-        Number(bh.input.body.loanAmount);
-
-      bh.input.body.available_balance = newCurrentAmount;
 
       this.tracerService.sendData(spanInst, bh);
       bh = await this.sd_tsGsEpFuB7luFpWW(bh, parentSpanInst);
@@ -1931,10 +1931,10 @@ export class money {
         to: bh.input.body.email,
         subject: '<b> LOAN UNSUCCESSFUL </b>',
         from: 'Capitec',
-        body: `Your application for a loan was not approved.
-   ${bh.input.body.rejectionReason}
-
-   <center><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Capitec_Bank_logo.svg/768px-Capitec_Bank_logo.svg.png" width="300px" height="80px"/>  </center>`,
+        body: `
+    <p>Your application for a loan was not approved.</p>
+    <p>${bh.input.body.rejectionReason}</p>
+    <center><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Capitec_Bank_logo.svg/768px-Capitec_Bank_logo.svg.png" width="300px" height="80px"/>  </center>`,
       };
 
       console.log('check mfanaka ==>', bh.input.body);

@@ -394,7 +394,6 @@
         "acceptFileUpload": false,
         "useDataModel": false,
         "dataModelIsArray": false,
-        "uploadFileOptions": "",
         "erd": "",
         "erdName": "",
         "entity": "",
@@ -965,7 +964,6 @@
         "acceptFileUpload": false,
         "useDataModel": false,
         "dataModelIsArray": false,
-        "uploadFileOptions": "",
         "erd": "",
         "erdName": "",
         "entity": "",
@@ -5176,6 +5174,7 @@
             "stream": "bh.file.downloadStream"
         },
         "dataModelIsArray": false,
+        "cookies": [],
         "inputs": 1,
         "outputs": 0,
         "erd": "",
@@ -5452,6 +5451,7 @@
         "acceptFileUpload": false,
         "useDataModel": false,
         "dataModelIsArray": false,
+        "uploadFileOptions": "",
         "erd": "",
         "erdName": "",
         "entity": "",
@@ -5736,8 +5736,7 @@
         "nodeType": "flow",
         "name": "",
         "headers": {
-            "Content-type": "image/jpeg",
-            "Content-Type": "application/pdf"
+            "Content-type": "image/jpeg"
         },
         "responseBody": {
             "type": "bh",
@@ -5768,12 +5767,6 @@
                     "key": "Content-type",
                     "value": "image/jpeg",
                     "rowId": "sd_UTdcvLy1UgNik2EL",
-                    "valid": true
-                },
-                {
-                    "key": "Content-Type",
-                    "value": "application/pdf",
-                    "rowId": "sd_eS5jB9NJteF3dTB1",
                     "valid": true
                 }
             ],

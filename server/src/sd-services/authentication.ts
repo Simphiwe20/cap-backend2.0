@@ -3450,10 +3450,7 @@ Your account number is ${bh.accountNo}
 
   async sd_tK05ogYSl1YjfcDG(bh, parentSpanInst) {
     try {
-      bh.web.res.set({
-        'Content-type': 'image/jpeg',
-        'Content-Type': 'application/pdf',
-      });
+      bh.web.res.set({ 'Content-type': 'image/jpeg' });
 
       bh.file.downloadStream.pipe(bh.web.res);
       return bh;
