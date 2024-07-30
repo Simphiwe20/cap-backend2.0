@@ -681,6 +681,38 @@ export class authentication {
         this.generatedMiddlewares
       )
     );
+
+    this.app['post'](
+      `${this.serviceBasePath}/send-code`,
+      cookieParser(),
+      this.sdService.getMiddlesWaresBySequenceId(
+        null,
+        'pre',
+        this.generatedMiddlewares
+      ),
+
+      async (req, res, next) => {
+        let bh: any = {};
+        try {
+          bh = this.sdService.__constructDefault(
+            { local: {}, input: {} },
+            req,
+            res,
+            next
+          );
+          let parentSpanInst = null;
+          bh = await this.sd_D26nC7rQAI6GTMqN(bh, parentSpanInst);
+          //appendnew_next_sd_OFZpuN6zwEE3rnCC
+        } catch (e) {
+          return await this.errorHandler(bh, e, 'sd_OFZpuN6zwEE3rnCC');
+        }
+      },
+      this.sdService.getMiddlesWaresBySequenceId(
+        null,
+        'post',
+        this.generatedMiddlewares
+      )
+    );
     //appendnew_flow_authentication_HttpIn
   }
   //   service flows_authentication
@@ -758,12 +790,36 @@ export class authentication {
       parentSpanInst
     );
     try {
+      const bcrypt = require('bcrypt');
+
       bh.collection = 'users';
       bh.filter = { email: bh.input.body['email'] };
 
       delete bh.input.body.collection;
 
+      console.log('Before update: ', bh.input.body);
+
+      if (bh.input.body.updatePin) {
+        const hashedPassword = await bcrypt.hash(
+          bh.input.body['remotePin'],
+          10
+        );
+        bh.input.body['remotePin'] = hashedPassword;
+        bh.input.body.updatePin = false;
+      }
+
+      if (bh.input.body.isEmailVerified) {
+        bh.filter = { _id: bh.input.body['_id'] };
+      }
+
+      console.log('After update: ', bh.input.body);
+
+      // bh.input.body.updatePin = false
       bh.body = { $set: bh.input.body };
+
+      console.log('After $set: ', bh.input.body);
+      console.log('$set result: ', bh.body);
+
       this.tracerService.sendData(spanInst, bh);
       bh = await this.sd_2i8wqB0nc7q2mVyx(bh, parentSpanInst);
       //appendnew_next_sd_IjtqtSWN5xiBQ0Ic
@@ -1912,6 +1968,9 @@ export class authentication {
 
       delete bh.input.body.collection;
 
+      delete bh.input.body.firstName;
+      delete bh.input.body.lastName;
+
       bh.body = { $set: bh.input.body };
 
       bh.accountNo = new Date().getTime();
@@ -1979,10 +2038,9 @@ export class authentication {
         to: bh.input.body.email,
         subject: 'APPLICATION SUCCESSFUL',
         from: 'Capitec',
-        body: `Your application to bank with Capitec has been approved.
-Your account number is ${bh.accountNo}
-
-<center><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Capitec_Bank_logo.svg/768px-Capitec_Bank_logo.svg.png" width="300px" height="80px"/></center>`,
+        body: `<p>Your application to bank with Capitec has been approved.
+            Your account number is ${bh.accountNo}.</p>
+            <center><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Capitec_Bank_logo.svg/768px-Capitec_Bank_logo.svg.png" width="300px" height="80px"/></center>`,
       };
 
       bh.input.body['accountNumber'] = bh.accountNo;
@@ -2109,10 +2167,9 @@ Your account number is ${bh.accountNo}
         to: bh.input.body.email,
         subject: '<b> REGISTRATION UNSUCCESSFUL </b>',
         from: 'Capitec',
-        body: `Your application to bank with Capitec was not approved.
-    ${bh.input.body.rejectionReason}
-   
-   <center><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Capitec_Bank_logo.svg/768px-Capitec_Bank_logo.svg.png" width="300px" height="80px"/>  </center>`,
+        body: `<p> Your application to bank with Capitec was not approved.</p>
+           <p>${bh.input.body.rejectionReason}.</p> 
+           <center><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Capitec_Bank_logo.svg/768px-Capitec_Bank_logo.svg.png" width="300px" height="80px"/>  </center>`,
       };
 
       this.tracerService.sendData(spanInst, bh);
@@ -2882,14 +2939,16 @@ Your account number is ${bh.accountNo}
       bh.result = bh.result;
       console.log(bh.result);
 
-      const data = bh.result.map((_data) => {
-        return _data.filename;
-      });
-      console.log(data);
+      // const data = bh.result.find(_data =>{
+      // return _data.filename
+      // })
+      // console.log(data)
 
-      data.forEach((item) => {
-        bh.filter = { filename: item };
-        console.log('Items ', item);
+      bh.result.forEach((item) => {
+        if (item.filename.email === bh.input.params.filename) {
+          bh.filter = { _id: item._id };
+          console.log('Matching Item ', item);
+        }
       });
 
       console.log('filter: ', bh.filter);
@@ -3126,14 +3185,16 @@ Your account number is ${bh.accountNo}
       bh.result = bh.result;
       console.log(bh.result);
 
-      const data = bh.result.map((_data) => {
-        return _data.filename;
-      });
-      console.log(data);
+      // const data = bh.result.find(_data =>{
+      // return _data.filename
+      // })
+      // console.log(data)
 
-      data.forEach((item) => {
-        bh.filter = { filename: item };
-        console.log('Items ', item);
+      bh.result.forEach((item) => {
+        if (item.filename.email === bh.input.params.filename) {
+          bh.filter = { _id: item._id };
+          console.log('Matching Item ', item);
+        }
       });
 
       console.log('filter: ', bh.filter);
@@ -3370,14 +3431,16 @@ Your account number is ${bh.accountNo}
       bh.result = bh.result;
       console.log(bh.result);
 
-      const data = bh.result.map((_data) => {
-        return _data.filename;
-      });
-      console.log(data);
+      // const data = bh.result.find(_data =>{
+      // return _data.filename
+      // })
+      // console.log(data)
 
-      data.forEach((item) => {
-        bh.filter = { filename: item };
-        console.log('Items ', item);
+      bh.result.forEach((item) => {
+        if (item.filename.email === bh.input.params.filename) {
+          bh.filter = { _id: item._id };
+          console.log('Matching Item ', item);
+        }
       });
 
       console.log('filter: ', bh.filter);
@@ -3518,6 +3581,111 @@ Your account number is ${bh.accountNo}
       return bh;
     } catch (e) {
       return await this.errorHandler(bh, e, 'sd_vtXdogcbNBnfuFIQ');
+    }
+  }
+
+  async sd_D26nC7rQAI6GTMqN(bh, parentSpanInst) {
+    const spanInst = this.tracerService.createSpan(
+      'sd_D26nC7rQAI6GTMqN',
+      parentSpanInst
+    );
+    try {
+      console.log('BH: ', bh);
+
+      bh.payload = {
+        to: bh.input.body.email,
+        subject: 'VERIFICATION CODE',
+        from: 'Capitec',
+        body: `<p>Please see the verification code below.</p>
+            <p>Verification code: ${bh.input.body.code}.</p>
+            <center><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Capitec_Bank_logo.svg/768px-Capitec_Bank_logo.svg.png" width="300px" height="80px"/></center>`,
+        headers: {
+          'Content-Type': 'text/html',
+        },
+      };
+
+      bh.result = {
+        message: 'Verification code has been sent',
+      };
+      this.tracerService.sendData(spanInst, bh);
+      bh = await this.sd_6UOunp3mrA0Af4pC(bh, parentSpanInst);
+      //appendnew_next_sd_D26nC7rQAI6GTMqN
+      return bh;
+    } catch (e) {
+      return await this.errorHandler(
+        bh,
+        e,
+        'sd_D26nC7rQAI6GTMqN',
+        spanInst,
+        'sd_D26nC7rQAI6GTMqN'
+      );
+    }
+  }
+
+  async sd_6UOunp3mrA0Af4pC(bh, parentSpanInst) {
+    const spanInst = this.tracerService.createSpan(
+      'sd_6UOunp3mrA0Af4pC',
+      parentSpanInst
+    );
+    try {
+      let mailConfigObj = this.sdService.getConfigObj(
+        'emailout-config',
+        'sd_bkwqQKmMI8faGDdO'
+      );
+      let server = mailConfigObj.server;
+      let port = mailConfigObj.port;
+      let secure = mailConfigObj.secure;
+      let tls = mailConfigObj.tls;
+      let userid = mailConfigObj.userid;
+      let password = mailConfigObj.password;
+      let emailServiceInstance = EmailOutService.getInstance();
+      bh.result = await emailServiceInstance.sendEmail(
+        {
+          server,
+          port,
+          secure,
+          tls,
+        },
+        {
+          userid,
+          password,
+          to: bh.input.body.email,
+          subject: bh.payload.subject,
+          body: bh.payload.body,
+          cc: undefined,
+          bcc: undefined,
+          from: bh.payload.from,
+          html: undefined,
+          iCal: undefined,
+          routingOptions: undefined,
+          contentOptions: undefined,
+          securityOptions: undefined,
+          headerOptions: bh.payload.headers,
+          attachments: undefined,
+        }
+      );
+      this.tracerService.sendData(spanInst, bh);
+      await this.sd_8p3Zf0u4YfZhUOld(bh, parentSpanInst);
+      //appendnew_next_sd_6UOunp3mrA0Af4pC
+      return bh;
+    } catch (e) {
+      return await this.errorHandler(
+        bh,
+        e,
+        'sd_6UOunp3mrA0Af4pC',
+        spanInst,
+        'sd_6UOunp3mrA0Af4pC'
+      );
+    }
+  }
+
+  async sd_8p3Zf0u4YfZhUOld(bh, parentSpanInst) {
+    try {
+      bh.web.res.status(200).send(bh.result);
+
+      return bh;
+    } catch (e) {
+      return await this.errorHandler(bh, e, 'sd_8p3Zf0u4YfZhUOld');
     }
   }
 

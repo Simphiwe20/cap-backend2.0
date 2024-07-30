@@ -437,7 +437,7 @@
         "viewType": "common",
         "nodeType": "flow",
         "name": "",
-        "script": "bh.collection = 'users';\nbh.filter = { 'email': bh.input.body['email']};\n\ndelete bh.input.body.collection;\n\nbh.body = {$set: bh.input.body};",
+        "script": "const bcrypt = require('bcrypt')\n\nbh.collection = 'users';\nbh.filter = { 'email': bh.input.body['email']};\n\n\n\ndelete bh.input.body.collection;\n\nconsole.log(\"Before update: \", bh.input.body)\n\n\nif(bh.input.body.updatePin) {\n    const hashedPassword = await bcrypt.hash(bh.input.body['remotePin'],10);\n    bh.input.body['remotePin'] = hashedPassword\n    bh.input.body.updatePin = false\n}\n\nif(bh.input.body.isEmailVerified) {\n    bh.filter = { '_id': bh.input.body['_id']};\n}\n\n\nconsole.log(\"After update: \", bh.input.body)\n\n// bh.input.body.updatePin = false\nbh.body = {$set: bh.input.body};\n\nconsole.log(\"After $set: \", bh.input.body)\nconsole.log(\"$set result: \", bh.body)\n",
         "functionName": "sd_IjtqtSWN5xiBQ0Ic",
         "category": "Function",
         "x": 185,
@@ -1948,7 +1948,7 @@
         "viewType": "common",
         "nodeType": "flow",
         "name": "",
-        "script": "bh.collection = 'users';\nbh.filter = { 'email': bh.input.body['email']};\n\ndelete bh.input.body.collection;\n\nbh.body = {$set: bh.input.body};\n\nbh.accountNo = new Date().getTime()",
+        "script": "bh.collection = 'users';\nbh.filter = { 'email': bh.input.body['email']};\n\ndelete bh.input.body.collection;\n\ndelete bh.input.body.firstName;\ndelete bh.input.body.lastName;\n\nbh.body = {$set: bh.input.body};\n\nbh.accountNo = new Date().getTime()",
         "functionName": "sd_k1W1kSOTd6xxcwVp",
         "category": "Function",
         "x": 225,
@@ -2274,7 +2274,7 @@
         "viewType": "common",
         "nodeType": "flow",
         "name": "",
-        "script": "bh.payload = {\n    to: bh.input.body.email,\n    subject: 'APPLICATION SUCCESSFUL',\n    from: 'Capitec',\n    body: `Your application to bank with Capitec has been approved.\nYour account number is ${bh.accountNo}\n\n<center><img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Capitec_Bank_logo.svg/768px-Capitec_Bank_logo.svg.png\" width=\"300px\" height=\"80px\"/></center>`\n}\n\n\nbh.input.body['accountNumber'] = bh.accountNo\n\n\nconsole.log(bh.payload)",
+        "script": "bh.payload = {\n    to: bh.input.body.email,\n    subject: 'APPLICATION SUCCESSFUL',\n    from: 'Capitec',\n    body: `<p>Your application to bank with Capitec has been approved.\n            Your account number is ${bh.accountNo}.</p>\n            <center><img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Capitec_Bank_logo.svg/768px-Capitec_Bank_logo.svg.png\" width=\"300px\" height=\"80px\"/></center>`\n}\n\n\nbh.input.body['accountNumber'] = bh.accountNo\n\n\nconsole.log(bh.payload)",
         "functionName": "sd_33uhtyPmtIE2sl8p",
         "category": "Function",
         "x": 385,
@@ -2340,7 +2340,7 @@
         "viewType": "common",
         "nodeType": "flow",
         "name": "",
-        "script": "bh.payload = {\n    to: bh.input.body.email,\n    subject: '<b> REGISTRATION UNSUCCESSFUL </b>',\n    from: 'Capitec',\n    body: `Your application to bank with Capitec was not approved.\n    ${bh.input.body.rejectionReason}\n   \n   <center><img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Capitec_Bank_logo.svg/768px-Capitec_Bank_logo.svg.png\" width=\"300px\" height=\"80px\"/>  </center>`\n}\n",
+        "script": "bh.payload = {\n    to: bh.input.body.email,\n    subject: '<b> REGISTRATION UNSUCCESSFUL </b>',\n    from: 'Capitec',\n    body: `<p> Your application to bank with Capitec was not approved.</p>\n           <p>${bh.input.body.rejectionReason}.</p> \n           <center><img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Capitec_Bank_logo.svg/768px-Capitec_Bank_logo.svg.png\" width=\"300px\" height=\"80px\"/>  </center>`\n}\n",
         "functionName": "sd_YUZy02IqT07gy1tn",
         "category": "Function",
         "x": 385,
@@ -4457,7 +4457,7 @@
         "viewType": "common",
         "nodeType": "flow",
         "name": "",
-        "script": "bh.result = bh.result\nconsole.log(bh.result)\n\nconst data = bh.result.map(_data =>{\nreturn _data.filename\n})\nconsole.log(data)\n\ndata.forEach( item =>{\nbh.filter = {'filename' : item}\nconsole.log(\"Items \", item)\n})\n\nconsole.log('filter: ', bh.filter)",
+        "script": "bh.result = bh.result\nconsole.log(bh.result)\n\n// const data = bh.result.find(_data =>{\n// return _data.filename\n// })\n// console.log(data)\n\nbh.result.forEach( item => {\n    if(item.filename.email === bh.input.params.filename) {\n        bh.filter = {'_id' : item._id}\n        console.log(\"Matching Item \", item)\n\n    }\n})\n\nconsole.log('filter: ', bh.filter)",
         "functionName": "sd_KdIoWnVXziElRGyY",
         "category": "Function",
         "x": 965,
@@ -5036,7 +5036,7 @@
         "viewType": "common",
         "nodeType": "flow",
         "name": "",
-        "script": "bh.result = bh.result\nconsole.log(bh.result)\n\nconst data = bh.result.map(_data =>{\nreturn _data.filename\n})\nconsole.log(data)\n\ndata.forEach( item =>{\nbh.filter = {'filename' : item}\nconsole.log(\"Items \", item)\n})\n\nconsole.log('filter: ', bh.filter)",
+        "script": "bh.result = bh.result\nconsole.log(bh.result)\n\n// const data = bh.result.find(_data =>{\n// return _data.filename\n// })\n// console.log(data)\n\nbh.result.forEach( item => {\n    if(item.filename.email === bh.input.params.filename) {\n        bh.filter = {'_id' : item._id}\n        console.log(\"Matching Item \", item)\n\n    }\n})\n\nconsole.log('filter: ', bh.filter)",
         "functionName": "sd_8tpok6LYTE1Imo2b",
         "category": "Function",
         "x": 885,
@@ -5615,7 +5615,7 @@
         "viewType": "common",
         "nodeType": "flow",
         "name": "",
-        "script": "bh.result = bh.result\nconsole.log(bh.result)\n\nconst data = bh.result.map(_data =>{\nreturn _data.filename\n})\nconsole.log(data)\n\ndata.forEach( item =>{\nbh.filter = {'filename' : item}\nconsole.log(\"Items \", item)\n})\n\nconsole.log('filter: ', bh.filter)",
+        "script": "bh.result = bh.result\nconsole.log(bh.result)\n\n// const data = bh.result.find(_data =>{\n// return _data.filename\n// })\n// console.log(data)\n\nbh.result.forEach( item => {\n    if(item.filename.email === bh.input.params.filename) {\n        bh.filter = {'_id' : item._id}\n        console.log(\"Matching Item \", item)\n\n    }\n})\n\nconsole.log('filter: ', bh.filter)",
         "functionName": "sd_7UODO4qVKXNrT6Gc",
         "category": "Function",
         "x": 905,
@@ -5998,6 +5998,269 @@
                 "sd_jhfvpJLQq0j8fXSO"
             ]
         ],
+        "__n_excludedFromValidation__": {},
+        "generateNext": false,
+        "serviceName": "authentication",
+        "generated": true
+    },
+    {
+        "id": "sd_OFZpuN6zwEE3rnCC",
+        "type": "HttpIn",
+        "z": "SSD_SERVICE_ID_sd_L5Ge8g2BzQJlhEXu",
+        "viewType": "server",
+        "nodeType": "start",
+        "name": "Send code",
+        "path": "/send-code",
+        "uploadpath": "",
+        "summary": "",
+        "description": "",
+        "method": "post",
+        "sequenceId": "",
+        "consumes": "",
+        "produces": "",
+        "filetype": "path",
+        "acceptFileUpload": false,
+        "useDataModel": false,
+        "dataModelIsArray": false,
+        "erd": "",
+        "erdName": "",
+        "entity": "",
+        "entityId": "",
+        "ref": "",
+        "editableListData": {
+            "responses": [],
+            "params": [],
+            "produces": [],
+            "consumes": []
+        },
+        "inputs": 0,
+        "outputs": 1,
+        "validateRequestUsingSwaggerDocs": false,
+        "category": "HTTP",
+        "x": 80,
+        "y": 1100,
+        "wires": [
+            [
+                "sd_D26nC7rQAI6GTMqN"
+            ]
+        ],
+        "__ssdTypeInputs__": {
+            "uploadpath": {
+                "type": "str",
+                "value": "",
+                "nullable": "true",
+                "nullableValue": "",
+                "constant": false
+            }
+        },
+        "__n_excludedFromValidation__": {},
+        "generateNext": true,
+        "serviceName": "authentication",
+        "functionName": "sd_OFZpuN6zwEE3rnCC"
+    },
+    {
+        "id": "sd_D26nC7rQAI6GTMqN",
+        "type": "Script",
+        "z": "SSD_SERVICE_ID_sd_L5Ge8g2BzQJlhEXu",
+        "viewType": "common",
+        "nodeType": "flow",
+        "name": "",
+        "script": "console.log('BH: ', bh)\n\nbh.payload = {\n    to: bh.input.body.email,\n    subject: 'VERIFICATION CODE',\n    from: 'Capitec',\n    body: `<p>Please see the verification code below.</p>\n            <p>Verification code: ${bh.input.body.code}.</p>\n            <center><img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Capitec_Bank_logo.svg/768px-Capitec_Bank_logo.svg.png\" width=\"300px\" height=\"80px\"/></center>`,\n    headers: {\n        'Content-Type': 'text/html'\n    }\n}\n\nbh.result = {\n    message: 'Verification code has been sent'\n}",
+        "functionName": "sd_D26nC7rQAI6GTMqN",
+        "category": "Function",
+        "x": 220,
+        "y": 1100,
+        "wires": [
+            [
+                "sd_6UOunp3mrA0Af4pC"
+            ]
+        ],
+        "__n_excludedFromValidation__": {},
+        "generateNext": false,
+        "serviceName": "authentication",
+        "generated": true
+    },
+    {
+        "id": "sd_8p3Zf0u4YfZhUOld",
+        "type": "HttpOut",
+        "z": "SSD_SERVICE_ID_sd_L5Ge8g2BzQJlhEXu",
+        "viewType": "server",
+        "nodeType": "flow",
+        "name": "",
+        "headers": {},
+        "responseBody": {
+            "type": "bh",
+            "value": "result",
+            "ssd_typedInputField": true
+        },
+        "httpcode": {
+            "type": "num",
+            "value": 200,
+            "ssd_typedInputField": true
+        },
+        "responseType": "obj",
+        "swaggerResponse": {},
+        "responseMapping": {
+            "status": 200,
+            "obj": "bh.result",
+            "send": "bh.result"
+        },
+        "dataModelIsArray": false,
+        "inputs": 1,
+        "outputs": 0,
+        "erd": "",
+        "entity": "",
+        "entityId": "",
+        "ref": "",
+        "editableListData": {
+            "headers": [],
+            "produces": [],
+            "responses": []
+        },
+        "cookiesList": {},
+        "switchStates": {
+            "headers": "Map",
+            "cookies": "Map"
+        },
+        "functionName": "sd_8p3Zf0u4YfZhUOld",
+        "category": "HTTP",
+        "x": 505,
+        "y": 1100,
+        "wires": [],
+        "__n_excludedFromValidation__": {},
+        "generateNext": false,
+        "serviceName": "authentication",
+        "generated": true
+    },
+    {
+        "id": "sd_6UOunp3mrA0Af4pC",
+        "type": "EmailOut",
+        "z": "SSD_SERVICE_ID_sd_L5Ge8g2BzQJlhEXu",
+        "viewType": "server",
+        "nodeType": "flow",
+        "name": "",
+        "emailoutconfig": "sd_bkwqQKmMI8faGDdO",
+        "from": "bh.payload.from",
+        "to": "bh.input.body.email",
+        "cc": "undefined",
+        "bcc": "undefined",
+        "subject": "bh.payload.subject",
+        "body": "bh.payload.body",
+        "html": "undefined",
+        "attachmentList": {},
+        "switchStates": {
+            "attachment": "Map"
+        },
+        "editableListData": {},
+        "routingoptions": "undefined",
+        "iCal": "undefined",
+        "contentoptions": "undefined",
+        "headeroptions": "bh.payload.headers",
+        "securityoptions": "undefined",
+        "outputs": 1,
+        "resultMapping": "bh.result",
+        "functionName": "sd_6UOunp3mrA0Af4pC",
+        "category": "Messaging",
+        "x": 345,
+        "y": 1100,
+        "wires": [
+            [
+                "sd_8p3Zf0u4YfZhUOld"
+            ]
+        ],
+        "__ssdTypeInputs__": {
+            "from": {
+                "type": "bh",
+                "value": "payload.from",
+                "nullable": "true",
+                "nullableValue": "undefined",
+                "constant": false
+            },
+            "to": {
+                "type": "bh",
+                "value": "input.body.email",
+                "nullable": "true",
+                "nullableValue": "undefined",
+                "constant": false
+            },
+            "cc": {
+                "type": "bh",
+                "value": "",
+                "nullable": "true",
+                "nullableValue": "undefined",
+                "constant": false
+            },
+            "bcc": {
+                "type": "bh",
+                "value": "",
+                "nullable": "true",
+                "nullableValue": "undefined",
+                "constant": false
+            },
+            "subject": {
+                "type": "bh",
+                "value": "payload.subject",
+                "nullable": "true",
+                "nullableValue": "undefined",
+                "constant": false
+            },
+            "body": {
+                "type": "bh",
+                "value": "payload.body",
+                "nullable": "true",
+                "nullableValue": "undefined",
+                "constant": false
+            },
+            "html": {
+                "type": "bh",
+                "value": "",
+                "nullable": "true",
+                "nullableValue": "undefined",
+                "constant": false
+            },
+            "routingoptions": {
+                "type": "bh",
+                "value": "",
+                "nullable": "true",
+                "nullableValue": "undefined",
+                "constant": false
+            },
+            "iCal": {
+                "type": "bh",
+                "value": "",
+                "nullable": "true",
+                "nullableValue": "undefined",
+                "constant": false
+            },
+            "contentoptions": {
+                "type": "bh",
+                "value": "",
+                "nullable": "true",
+                "nullableValue": "undefined",
+                "constant": false
+            },
+            "headeroptions": {
+                "type": "bh",
+                "value": "payload.headers",
+                "nullable": "true",
+                "nullableValue": "undefined",
+                "constant": false
+            },
+            "securityoptions": {
+                "type": "bh",
+                "value": "",
+                "nullable": "true",
+                "nullableValue": "undefined",
+                "constant": false
+            },
+            "resultMapping": {
+                "type": "bh",
+                "value": "result",
+                "nullable": "true",
+                "nullableValue": "undefined",
+                "constant": false
+            }
+        },
         "__n_excludedFromValidation__": {},
         "generateNext": false,
         "serviceName": "authentication",

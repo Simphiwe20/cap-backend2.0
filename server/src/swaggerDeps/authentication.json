@@ -234,5 +234,18 @@
                 "authentication"
             ]
         }
+    },
+    "/send-code": {
+        "post": {
+            "summary": "",
+            "description": "",
+            "consumes": [],
+            "produces": [],
+            "parameters": [],
+            "responses": {},
+            "tags": [
+                "authentication"
+            ]
+        }
     }
 }
